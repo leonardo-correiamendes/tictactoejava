@@ -1,6 +1,10 @@
 package leonardo.java.controller;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
 
 import leonardo.java.model.TicTacToeModel;
 import leonardo.java.view.TicTacToeView;
@@ -18,18 +22,64 @@ public class TicTacToeController {
 
         view.addBtnJouerActionListener(e -> {
             view.getJeu().getContentPane().removeAll();
-            view.jeuFrame();
+            view.choixModeJeu();
             view.getJeu().revalidate();
             view.getJeu().repaint();
 
-            ajouterListeners();
+            ajouterListenersChoixMode();
         });
 
         view.addBtnResetActionListener(e -> resetJeu());
     }
 
-    // Méthodes
+    private void ajouterListenersChoixMode() {
+        view.addBtnJouerVsJoueurActionListener(e -> {
+            lancer1vs1();
+        });
 
+        view.addBtnJouerVsOrdiEasyActionListener(e -> {
+            lancer1vsOrdiEasy();
+        });
+
+        // Autre choix
+    }
+    
+    private void lancer1vs1() {
+        view.setChoixModeJeu("Mode 1vs1 sélectionné !");
+        Timer timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            view.getJeu().getContentPane().removeAll();
+            view.jeuFrame();
+            view.getJeu().revalidate();
+            view.getJeu().repaint();
+            ajouterListeners();
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void lancer1vsOrdiEasy() {
+        view.setChoixModeJeu("Mode contre l'ordinateur (facile) sélectionné !");
+        model.setOrdiEasy(true);
+        Timer timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            view.getJeu().getContentPane().removeAll();
+            view.jeuFrame();
+            view.getJeu().revalidate();
+            view.getJeu().repaint();
+            ajouterListeners();
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    // Méthodes
     private void ajouterListeners() {
         System.out.println("Ajout des écouteurs...");
         for (int i = 0; i < 3; i++) {
@@ -60,7 +110,21 @@ public class TicTacToeController {
                     view.setStatusLabel("Match nul !");
                 }
             } else {
-                view.setStatusLabel("Au tour de " + model.getJoueur());
+                if (model.getJoueur() == 'O' && model.isOrdiEasy()) {
+                    System.out.println("L'ordinateur réfléchit...");
+                    int[] ordiEasyCoup = model.jouerOrdiEasy();
+                    if (ordiEasyCoup != null) {
+                        view.addBtnCelluleAnim(ordiEasyCoup[0], ordiEasyCoup[1], "O");
+                        if (model.isGameOver()) {
+                            view.setStatusLabel("L'ordinateur a gagné");
+                            view.highlightWinningButtons(model.getWinningCells());
+                        } else {
+                            view.setStatusLabel("Au tour de X");
+                        }
+                    }
+                } else {
+                    view.setStatusLabel("Au tour de " + model.getJoueur());
+                }
             }
         }
     }

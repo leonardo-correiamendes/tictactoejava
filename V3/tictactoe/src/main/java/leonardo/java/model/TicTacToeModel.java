@@ -1,5 +1,7 @@
 package leonardo.java.model;
 
+import java.util.Random;
+
 public class TicTacToeModel {
     
     // Attributs
@@ -8,6 +10,7 @@ public class TicTacToeModel {
     private boolean gameOver;
     private boolean victoire = false;
     private int nbCoups;
+    private boolean ordiEasy = false;
 
     // Constructeur
     public TicTacToeModel() {
@@ -32,6 +35,7 @@ public class TicTacToeModel {
         gameOver = false;
         victoire = false;
         nbCoups = 0;
+        
     }
 
     // Jouer un coup
@@ -64,6 +68,24 @@ public class TicTacToeModel {
                 || (ligne + colonne == 2 && grille[0][2] == joueur && grille[1][1] == joueur && grille[2][0] == joueur); // Diagonale
     }
 
+    public int[] jouerOrdiEasy() {
+        if(!ordiEasy || gameOver) return null;
+
+        Random random = new Random();
+
+        int ligne, colonne;
+
+        // Trouver un coup
+        do {
+            ligne = random.nextInt(3);
+            colonne = random.nextInt(3);
+        } while (grille[ligne][colonne] != ' ');
+
+        jouerCoup(ligne, colonne);
+
+        return new int[]{ligne, colonne};
+    }
+
     // Getters
     public char getJoueur() {
         return joueur;
@@ -71,6 +93,10 @@ public class TicTacToeModel {
 
     public char getCellule(int ligne, int colonne) {
         return grille[ligne][colonne];
+    }
+
+    public boolean isOrdiEasy() {
+        return this.ordiEasy;
     }
 
     public int[][] getWinningCells() {
@@ -105,5 +131,10 @@ public class TicTacToeModel {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    // Setters
+    public void setOrdiEasy(boolean choix) {
+        this.ordiEasy = choix;
     }
 }

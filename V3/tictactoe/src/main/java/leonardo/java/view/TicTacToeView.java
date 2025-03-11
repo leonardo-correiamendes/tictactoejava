@@ -10,8 +10,11 @@ public class TicTacToeView extends JFrame {
     // Attributs
     private JFrame jeu;
     private JButton btnJouer;
+    private JButton btnJouerVsJoueur;
+    private JButton btnJouerVsOrdiEasy;
     private JButton[][] btnGrille = new JButton[3][3];
     private JLabel statusLabel;
+    private JLabel choixModeJeu;
     private JButton btnReset = new JButton("Rejouer");
     private Timer effetVictoire;
     private int[][] winningCells;
@@ -44,7 +47,7 @@ public class TicTacToeView extends JFrame {
 
         // Configuration du Label
         JLabel titleLabel = new JLabel("Tic Tac Toe", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 34));
         titleLabel.setForeground(Color.WHITE);
         accueilPanel.add(titleLabel, BorderLayout.NORTH);
 
@@ -57,7 +60,7 @@ public class TicTacToeView extends JFrame {
 
         // Bouton Jouer
         btnJouer = new JButton("Jouer");
-        btnJouer.setFont(new Font("Arial", Font.BOLD, 20));
+        btnJouer.setFont(new Font("Arial", Font.BOLD, 25));
         btnJouer.setForeground(Color.WHITE);
         btnJouer.setFocusPainted(false);
         btnJouer.setBorderPainted(false);
@@ -70,7 +73,64 @@ public class TicTacToeView extends JFrame {
         accueilPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // Ajout du panel à la JFrame
-        jeu.add(accueilPanel);
+        this.jeu.add(accueilPanel);
+    }
+
+    public void choixModeJeu() {
+        // Configuration du panel
+        JPanel choixPanel = new JPanel();
+        choixPanel.setLayout(new BorderLayout());
+
+        // Configuration du Label
+        choixModeJeu = new JLabel("Choix du mode de jeu", SwingConstants.CENTER);
+        choixModeJeu.setFont(new Font("Arial", Font.BOLD, 32));
+        choixModeJeu.setForeground(Color.WHITE);
+        choixModeJeu.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        choixPanel.add(choixModeJeu, BorderLayout.NORTH);
+
+        // Bouton Jouer contre l'ordinateur (facile)
+        btnJouerVsOrdiEasy = new JButton("Jouer contre l'ordinateur (facile)");
+        btnJouerVsOrdiEasy.setFont(new Font("Arial", Font.BOLD, 18));
+        btnJouerVsOrdiEasy.setForeground(Color.WHITE);
+        btnJouerVsOrdiEasy.setFocusPainted(false);
+        btnJouerVsOrdiEasy.setBorderPainted(false);
+
+        // Bouton Jouer contre l'ordinateur (difficile)
+        JButton btnJouerOrdiH = new JButton("Jouer contre l'ordinateur (difficile)");
+        btnJouerOrdiH.setFont(new Font("Arial", Font.BOLD, 18));
+        btnJouerOrdiH.setForeground(Color.WHITE);
+        btnJouerOrdiH.setFocusPainted(false);
+        btnJouerOrdiH.setBorderPainted(false);
+
+        // Bouton Jouer contre un autre joueur
+        btnJouerVsJoueur = new JButton("Jouer contre un autre joueur");
+        btnJouerVsJoueur.setFont(new Font("Arial", Font.BOLD, 18));
+        btnJouerVsJoueur.setForeground(Color.WHITE);
+        btnJouerVsJoueur.setFocusPainted(false);
+        btnJouerVsJoueur.setBorderPainted(false);
+
+        // Panel pour centrer les boutons
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 0, 10, 0);
+        buttonPanel.add(btnJouerVsOrdiEasy);
+        buttonPanel.add(btnJouerOrdiH);
+        buttonPanel.add(this.btnJouerVsJoueur);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        buttonPanel.add(btnJouerVsOrdiEasy, gbc);
+
+        gbc.gridy = 1;
+        buttonPanel.add(btnJouerOrdiH, gbc);
+
+        gbc.gridy = 2;
+        buttonPanel.add(this.btnJouerVsJoueur, gbc);
+
+        // Ajout du panel au panel principal
+        choixPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        this.jeu.add(choixPanel);
     }
 
     // Affichage du jeu
@@ -132,11 +192,25 @@ public class TicTacToeView extends JFrame {
         statusLabel.setText(text);
     }
 
+    public void setChoixModeJeu(String text) {
+        choixModeJeu.setText(text);
+    }
+
     // Actions
 
-    // Démarre le jeu
+    // Choix du mode de jeu
     public void addBtnJouerActionListener(ActionListener listener) {
         btnJouer.addActionListener(listener);
+    }
+
+    // Jouer contre joueur
+    public void addBtnJouerVsJoueurActionListener(ActionListener listener) {
+        btnJouerVsJoueur.addActionListener(listener);
+    }
+
+    // Jouer contre l'ordinateur (facile)
+    public void addBtnJouerVsOrdiEasyActionListener(ActionListener listener) {
+        btnJouerVsOrdiEasy.addActionListener(listener);
     }
 
     // Jouer un coup
