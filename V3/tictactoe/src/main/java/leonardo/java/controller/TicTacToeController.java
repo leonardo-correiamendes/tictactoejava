@@ -41,7 +41,9 @@ public class TicTacToeController {
             lancer1vsOrdiEasy();
         });
 
-        // Autre choix
+        view.addBtnJouerVsOrdiHardActionListener(e -> {
+            lancer1vsOrdiHard();
+        });
     }
     
     private void lancer1vs1() {
@@ -64,6 +66,24 @@ public class TicTacToeController {
     private void lancer1vsOrdiEasy() {
         view.setChoixModeJeu("Mode contre l'ordinateur (facile) sélectionné !");
         model.setOrdiEasy(true);
+        Timer timer = new Timer(1000, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            view.getJeu().getContentPane().removeAll();
+            view.jeuFrame();
+            view.getJeu().revalidate();
+            view.getJeu().repaint();
+            ajouterListeners();
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void lancer1vsOrdiHard() {
+        view.setChoixModeJeu("Mode contre l'ordinateur (difficile) sélectionné !");
+        model.setOrdiHard(true);
         Timer timer = new Timer(1000, new ActionListener() {
 
             @Override
@@ -105,26 +125,38 @@ public class TicTacToeController {
             if (model.isGameOver()) {
                 if (model.partieGagnee(ligne, colonne)) {
                     view.setStatusLabel("Le joueur " + model.getJoueur() + " a gagné !");
-                    view.highlightWinningButtons(model.getWinningCells());
+                    view.highlightWinningButtons(model.winningCells());
                 } else {
                     view.setStatusLabel("Match nul !");
                 }
-            } else {
-                if (model.getJoueur() == 'O' && model.isOrdiEasy()) {
+            } else if (model.getJoueur() == 'O') {
+                if (model.isOrdiEasy()) {
                     System.out.println("L'ordinateur réfléchit...");
                     int[] ordiEasyCoup = model.jouerOrdiEasy();
                     if (ordiEasyCoup != null) {
                         view.addBtnCelluleAnim(ordiEasyCoup[0], ordiEasyCoup[1], "O");
                         if (model.isGameOver()) {
                             view.setStatusLabel("L'ordinateur a gagné");
-                            view.highlightWinningButtons(model.getWinningCells());
+                            view.highlightWinningButtons(model.winningCells());
                         } else {
                             view.setStatusLabel("Au tour de X");
                         }
                     }
-                } else {
-                    view.setStatusLabel("Au tour de " + model.getJoueur());
+                } else if (model.isOrdiHard()) {
+                    System.out.println("L'ordinateur réfléchit...");
+                    int[] ordiHardCoup = model.jouerOrdiHard();
+                    if (ordiHardCoup != null) {
+                        view.addBtnCelluleAnim(ordiHardCoup[0], ordiHardCoup[1], "O");
+                        if (model.isGameOver()) {
+                            view.setStatusLabel("L'ordinateur a gagné");
+                            view.highlightWinningButtons(model.winningCells());
+                        } else {
+                            view.setStatusLabel("Au tour de X");
+                        }
+                    }
                 }
+            } else {
+                view.setStatusLabel("Au tour de " + model.getJoueur());
             }
         }
     }

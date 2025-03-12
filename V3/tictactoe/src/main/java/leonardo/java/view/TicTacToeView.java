@@ -12,6 +12,7 @@ public class TicTacToeView extends JFrame {
     private JButton btnJouer;
     private JButton btnJouerVsJoueur;
     private JButton btnJouerVsOrdiEasy;
+    private JButton btnJouerVsOrdiHard;
     private JButton[][] btnGrille = new JButton[3][3];
     private JLabel statusLabel;
     private JLabel choixModeJeu;
@@ -96,11 +97,11 @@ public class TicTacToeView extends JFrame {
         btnJouerVsOrdiEasy.setBorderPainted(false);
 
         // Bouton Jouer contre l'ordinateur (difficile)
-        JButton btnJouerOrdiH = new JButton("Jouer contre l'ordinateur (difficile)");
-        btnJouerOrdiH.setFont(new Font("Arial", Font.BOLD, 18));
-        btnJouerOrdiH.setForeground(Color.WHITE);
-        btnJouerOrdiH.setFocusPainted(false);
-        btnJouerOrdiH.setBorderPainted(false);
+        btnJouerVsOrdiHard = new JButton("Jouer contre l'ordinateur (difficile)");
+        btnJouerVsOrdiHard.setFont(new Font("Arial", Font.BOLD, 18));
+        btnJouerVsOrdiHard.setForeground(Color.WHITE);
+        btnJouerVsOrdiHard.setFocusPainted(false);
+        btnJouerVsOrdiHard.setBorderPainted(false);
 
         // Bouton Jouer contre un autre joueur
         btnJouerVsJoueur = new JButton("Jouer contre un autre joueur");
@@ -114,7 +115,7 @@ public class TicTacToeView extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 0, 10, 0);
         buttonPanel.add(btnJouerVsOrdiEasy);
-        buttonPanel.add(btnJouerOrdiH);
+        buttonPanel.add(btnJouerVsOrdiHard);
         buttonPanel.add(this.btnJouerVsJoueur);
 
         gbc.gridx = 0;
@@ -122,7 +123,7 @@ public class TicTacToeView extends JFrame {
         buttonPanel.add(btnJouerVsOrdiEasy, gbc);
 
         gbc.gridy = 1;
-        buttonPanel.add(btnJouerOrdiH, gbc);
+        buttonPanel.add(btnJouerVsOrdiHard, gbc);
 
         gbc.gridy = 2;
         buttonPanel.add(this.btnJouerVsJoueur, gbc);
@@ -211,6 +212,11 @@ public class TicTacToeView extends JFrame {
     // Jouer contre l'ordinateur (facile)
     public void addBtnJouerVsOrdiEasyActionListener(ActionListener listener) {
         btnJouerVsOrdiEasy.addActionListener(listener);
+    }
+
+    // Jouer contre l'ordinateur (difficile)
+    public void addBtnJouerVsOrdiHardActionListener(ActionListener listener) {
+        btnJouerVsOrdiHard.addActionListener(listener);
     }
 
     // Jouer un coup

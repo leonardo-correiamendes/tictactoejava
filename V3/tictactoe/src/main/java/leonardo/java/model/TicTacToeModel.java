@@ -11,6 +11,7 @@ public class TicTacToeModel {
     private boolean victoire = false;
     private int nbCoups;
     private boolean ordiEasy = false;
+    private boolean ordiHard = false;
 
     // Constructeur
     public TicTacToeModel() {
@@ -35,7 +36,6 @@ public class TicTacToeModel {
         gameOver = false;
         victoire = false;
         nbCoups = 0;
-        
     }
 
     // Jouer un coup
@@ -68,38 +68,7 @@ public class TicTacToeModel {
                 || (ligne + colonne == 2 && grille[0][2] == joueur && grille[1][1] == joueur && grille[2][0] == joueur); // Diagonale
     }
 
-    public int[] jouerOrdiEasy() {
-        if(!ordiEasy || gameOver) return null;
-
-        Random random = new Random();
-
-        int ligne, colonne;
-
-        // Trouver un coup
-        do {
-            ligne = random.nextInt(3);
-            colonne = random.nextInt(3);
-        } while (grille[ligne][colonne] != ' ');
-
-        jouerCoup(ligne, colonne);
-
-        return new int[]{ligne, colonne};
-    }
-
-    // Getters
-    public char getJoueur() {
-        return joueur;
-    }
-
-    public char getCellule(int ligne, int colonne) {
-        return grille[ligne][colonne];
-    }
-
-    public boolean isOrdiEasy() {
-        return this.ordiEasy;
-    }
-
-    public int[][] getWinningCells() {
+    public int[][] winningCells() {
         if (!victoire) return null; // Si pas de victoire, retourne null
     
         // Vérification des lignes
@@ -127,6 +96,141 @@ public class TicTacToeModel {
         }
     
         return null; // Si aucune victoire détectée
+    }
+
+    public int[] jouerOrdiEasy() {
+        if(!ordiEasy || gameOver) return null;
+
+        Random random = new Random();
+
+        int ligne, colonne;
+
+        // Trouver un coup
+        do {
+            ligne = random.nextInt(3);
+            colonne = random.nextInt(3);
+        } while (grille[ligne][colonne] != ' ');
+
+        jouerCoup(ligne, colonne);
+
+        return new int[]{ligne, colonne};
+    }
+
+    public int[] jouerOrdiHard() {
+        if(!ordiHard || gameOver) return null;
+
+        int bestVal = Integer.MIN_VALUE;
+        int bestMove[] = new int[]{-1, -1};
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (grille[i][j] == ' ') {
+                    grille[i][j] = 'O';
+                    int moveVal = minimax(grille, 0, false);
+                    grille[i][j] = ' ';
+
+                    if (moveVal > bestVal) {
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+
+        if (bestMove[0] == -1) {
+            // Aucun coup trouvé, le plateau est plein ou erreur
+            return null;
+        }
+
+        System.out.println("i : " + bestMove[0] + " j : " + bestMove[1]);
+        jouerCoup(bestMove[0], bestMove[1]);
+        return bestMove;
+    }
+
+    private int minimax(char[][] board, int depth, boolean isMaximizing) {
+        int score = evaluate(board);
+        // Si l'état est terminal, on retourne le score
+        if (score == 10 || score == -10)
+            return score;
+        if (isBoardFull(board))
+            return 0;
+        
+        if (isMaximizing) {
+            int best = Integer.MIN_VALUE;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (board[i][j] == ' ') {
+                        board[i][j] = 'O';
+                        best = Math.max(best, minimax(board, depth + 1, false));
+                        board[i][j] = ' ';
+                    }
+                }
+            }
+            return best;
+        } else {
+            int best = Integer.MAX_VALUE;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (board[i][j] == ' ') {
+                        board[i][j] = 'X';
+                        best = Math.min(best, minimax(board, depth + 1, true));
+                        board[i][j] = ' ';
+                    }
+                }
+            }
+            return best;
+        }
+    }
+
+    private boolean isBoardFull(char[][] board) {
+        int count = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] != ' ') {
+                    count++;
+                }
+            }
+        }
+        return (count == 9);
+    }    
+
+    public int evaluate(char[][] board) {
+        // Vérification des lignes
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] != ' ' && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+                return (board[i][0] == 'O') ? 10 : -10;
+            }
+        }
+        // Vérification des colonnes
+        for (int j = 0; j < 3; j++) {
+            if (board[0][j] != ' ' && board[0][j] == board[1][j] && board[1][j] == board[2][j]) {
+                return (board[0][j] == 'O') ? 10 : -10;
+            }
+        }
+        // Vérification des diagonales
+        if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[1][1] == board[2][2])
+            return (board[0][0] == 'O') ? 10 : -10;
+        if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[1][1] == board[2][0])
+            return (board[0][2] == 'O') ? 10 : -10;
+        return 0;
+    }    
+    
+    // Getters
+    public char getJoueur() {
+        return joueur;
+    }
+
+    public char getCellule(int ligne, int colonne) {
+        return grille[ligne][colonne];
+    }
+
+    public boolean isOrdiEasy() {
+        return this.ordiEasy;
+    }
+
+    public boolean isOrdiHard() {
+        return this.ordiHard;
     }    
 
     public boolean isGameOver() {
@@ -136,5 +240,9 @@ public class TicTacToeModel {
     // Setters
     public void setOrdiEasy(boolean choix) {
         this.ordiEasy = choix;
+    }
+
+    public void setOrdiHard(boolean choix) {
+        this.ordiHard = choix;
     }
 }

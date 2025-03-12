@@ -18,6 +18,6 @@ public class TicTacToeApp {
 
         TicTacToeModel model = new TicTacToeModel();
         TicTacToeView view = new TicTacToeView();
-        TicTacToeController controller = new TicTacToeController(model, view);
+        new TicTacToeController(model, view);
     }
 }
