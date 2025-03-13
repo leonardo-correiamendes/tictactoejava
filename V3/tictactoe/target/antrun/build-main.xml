@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <delete file="c:\Users\leona\Documents\GitHub\tictactoejava\V3\tictactoe\target/original-tictactoe-3.jar" />
+  </target>
+</project>

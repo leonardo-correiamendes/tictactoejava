@@ -75,7 +75,7 @@ public class TicTacToeView extends JFrame {
         accueilPanel.add(accueilLabel, BorderLayout.NORTH);
 
         // Image 
-        ImageIcon imgAccueil = new ImageIcon("tictactoe\\src\\img\\tictactoeIcon.png");
+        ImageIcon imgAccueil = new ImageIcon(getClass().getResource("/img/tictactoeIcon.png"));
         Image imgAccueilResized = imgAccueil.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         ImageIcon iconAccueil = new ImageIcon(imgAccueilResized);
         JLabel iconAccueilLabel = new JLabel(iconAccueil, SwingConstants.CENTER);
