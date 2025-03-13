@@ -9,36 +9,58 @@ public class TicTacToeView extends JFrame {
 
     // Attributs
     private JFrame jeu;
+    private JLabel statutLabel;
+    private JLabel choixModeJeuLabel;
     private JButton btnJouer;
     private JButton btnJouerVsJoueur;
     private JButton btnJouerVsOrdiEasy;
     private JButton btnJouerVsOrdiHard;
-    private JButton[][] btnGrille = new JButton[3][3];
-    private JLabel statusLabel;
-    private JLabel choixModeJeu;
-    private JButton btnReset = new JButton("Rejouer");
+    private JButton[][] btnGrille;
+    private JButton btnRejouer = new JButton("Rejouer");
+    private JButton btnRetour = new JButton("Retour à la sélection du mode de jeu");
+    private JButton btnRetourAccueil;
     private Timer effetVictoire;
     private int[][] winningCells;
     
     // Constructeur
     public TicTacToeView() {
-
         // Configuration de la JFrame
-        jeu = new JFrame();
-        jeu.setTitle("Tic Tac Toe");
-        jeu.setSize(400, 400);
-        jeu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jeu.setLocationRelativeTo(null);
-        jeu.setResizable(false);
-
+        this.configJFrame();
         // Affichage de l'accueil
-        accueilFrame();
-        
+        this.accueilFrame();
         // Affichage de la JFrame
-        jeu.setVisible(true);
+        this.jeu.setVisible(true);
     }
 
     // Méthodes
+
+    // Configuration de la JFrame
+    public void configJFrame() {
+        // Configuration de la JFrame
+        this.jeu = new JFrame();
+        this.jeu.setTitle("Tic Tac Toe");
+        this.jeu.setSize(400, 400);
+        this.jeu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.jeu.setLocationRelativeTo(null);
+        this.jeu.setResizable(false);
+
+        this.setGlassPane();
+    }
+
+    // Configuration du Glass Pane (permet de ne pas pouvoir jouer à la place de l'ordi pendant qu'il réfléchit)
+    public void setGlassPane() {
+        // Glass Pane
+        JPanel glassPane = new JPanel();
+        glassPane.setOpaque(false);
+        glassPane.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                e.consume();
+            }
+        });
+
+        this.jeu.setGlassPane(glassPane);
+    }
 
     // Affichage de l'accueil
     public void accueilFrame() {
@@ -47,91 +69,95 @@ public class TicTacToeView extends JFrame {
         accueilPanel.setLayout(new BorderLayout());
 
         // Configuration du Label
-        JLabel titleLabel = new JLabel("Tic Tac Toe", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 34));
-        titleLabel.setForeground(Color.WHITE);
-        accueilPanel.add(titleLabel, BorderLayout.NORTH);
+        JLabel accueilLabel = new JLabel("Tic Tac Toe", SwingConstants.CENTER);
+        accueilLabel.setFont(new Font("Arial", Font.BOLD, 34));
+        accueilLabel.setForeground(Color.WHITE);
+        accueilPanel.add(accueilLabel, BorderLayout.NORTH);
 
         // Image 
-        ImageIcon imgOriginale = new ImageIcon("tictactoe\\src\\img\\tictactoeIcon.png");
-        Image imgResized = imgOriginale.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        ImageIcon imgIcon = new ImageIcon(imgResized);
-        JLabel iconLabel = new JLabel(imgIcon, SwingConstants.CENTER);
-        accueilPanel.add(iconLabel, BorderLayout.CENTER);
+        ImageIcon imgAccueil = new ImageIcon("tictactoe\\src\\img\\tictactoeIcon.png");
+        Image imgAccueilResized = imgAccueil.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        ImageIcon iconAccueil = new ImageIcon(imgAccueilResized);
+        JLabel iconAccueilLabel = new JLabel(iconAccueil, SwingConstants.CENTER);
+        accueilPanel.add(iconAccueilLabel, BorderLayout.CENTER);
 
         // Bouton Jouer
-        btnJouer = new JButton("Jouer");
-        btnJouer.setFont(new Font("Arial", Font.BOLD, 25));
-        btnJouer.setForeground(Color.WHITE);
-        btnJouer.setFocusPainted(false);
-        btnJouer.setBorderPainted(false);
+        this.btnJouer = new JButton("Jouer");
+        this.btnJouer.setFont(new Font("Arial", Font.BOLD, 25));
+        this.btnJouer.setForeground(Color.WHITE);
+        this.btnJouer.setFocusPainted(false);
+        this.btnJouer.setBorderPainted(false);
 
         // Panel pour centrer le bouton
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(btnJouer);
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.add(this.btnJouer);
 
         // Ajout du bouton au panel
-        accueilPanel.add(buttonPanel, BorderLayout.SOUTH);
+        accueilPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         // Ajout du panel à la JFrame
         this.jeu.add(accueilPanel);
     }
 
+    // Affichage du choix du mode de jeu
     public void choixModeJeu() {
         // Configuration du panel
         JPanel choixPanel = new JPanel();
         choixPanel.setLayout(new BorderLayout());
 
         // Configuration du Label
-        choixModeJeu = new JLabel("Choix du mode de jeu", SwingConstants.CENTER);
-        choixModeJeu.setFont(new Font("Arial", Font.BOLD, 32));
-        choixModeJeu.setForeground(Color.WHITE);
-        choixModeJeu.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
-        choixPanel.add(choixModeJeu, BorderLayout.NORTH);
+        choixModeJeuLabel = new JLabel("Choix du mode de jeu", SwingConstants.CENTER);
+        choixModeJeuLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        choixModeJeuLabel.setForeground(Color.WHITE);
+        choixModeJeuLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        choixPanel.add(choixModeJeuLabel, BorderLayout.NORTH);
 
         // Bouton Jouer contre l'ordinateur (facile)
-        btnJouerVsOrdiEasy = new JButton("Jouer contre l'ordinateur (facile)");
-        btnJouerVsOrdiEasy.setFont(new Font("Arial", Font.BOLD, 18));
-        btnJouerVsOrdiEasy.setForeground(Color.WHITE);
-        btnJouerVsOrdiEasy.setFocusPainted(false);
-        btnJouerVsOrdiEasy.setBorderPainted(false);
+        this.btnJouerVsOrdiEasy = new JButton("Jouer contre l'ordinateur (facile)");
+        configBtnChoix(this.btnJouerVsOrdiEasy);
 
         // Bouton Jouer contre l'ordinateur (difficile)
         btnJouerVsOrdiHard = new JButton("Jouer contre l'ordinateur (difficile)");
-        btnJouerVsOrdiHard.setFont(new Font("Arial", Font.BOLD, 18));
-        btnJouerVsOrdiHard.setForeground(Color.WHITE);
-        btnJouerVsOrdiHard.setFocusPainted(false);
-        btnJouerVsOrdiHard.setBorderPainted(false);
+        configBtnChoix(this.btnJouerVsOrdiHard);
 
         // Bouton Jouer contre un autre joueur
         btnJouerVsJoueur = new JButton("Jouer contre un autre joueur");
-        btnJouerVsJoueur.setFont(new Font("Arial", Font.BOLD, 18));
-        btnJouerVsJoueur.setForeground(Color.WHITE);
-        btnJouerVsJoueur.setFocusPainted(false);
-        btnJouerVsJoueur.setBorderPainted(false);
+        configBtnChoix(this.btnJouerVsJoueur);
+
+        // Bouton Retour à l'accueil
+        btnRetourAccueil = new JButton("Retour à l'accueil");
+        configBtnChoix(this.btnRetourAccueil);
 
         // Panel pour centrer les boutons
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 0, 10, 0);
-        buttonPanel.add(btnJouerVsOrdiEasy);
-        buttonPanel.add(btnJouerVsOrdiHard);
-        buttonPanel.add(this.btnJouerVsJoueur);
+        gbc.insets = new Insets(10, 0, 10, 0); // Marge entre les boutons
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        buttonPanel.add(btnJouerVsOrdiEasy, gbc);
+        buttonsPanel.add(this.btnJouerVsOrdiEasy, gbc);
 
         gbc.gridy = 1;
-        buttonPanel.add(btnJouerVsOrdiHard, gbc);
+        buttonsPanel.add(this.btnJouerVsOrdiHard, gbc);
 
         gbc.gridy = 2;
-        buttonPanel.add(this.btnJouerVsJoueur, gbc);
+        buttonsPanel.add(this.btnJouerVsJoueur, gbc);
+
+        gbc.gridy = 3;
+        buttonsPanel.add(this.btnRetourAccueil, gbc);
 
         // Ajout du panel au panel principal
-        choixPanel.add(buttonPanel, BorderLayout.CENTER);
+        choixPanel.add(buttonsPanel, BorderLayout.CENTER);
 
         this.jeu.add(choixPanel);
+    }
+
+    // Configuration des boutons de choix
+    public void configBtnChoix(JButton btn) {
+        btn.setFont(new Font("Arial", Font.BOLD, 18));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
     }
 
     // Affichage du jeu
@@ -145,98 +171,130 @@ public class TicTacToeView extends JFrame {
         JPanel grillePanel = new JPanel(new GridLayout(3, 3));
 
         // Configuration des boutons
-        for (int i = 0; i < btnGrille.length; i++) {
-            for (int j = 0; j < btnGrille[i].length; j++) {
-                btnGrille[i][j] = new JButton(" ");
-                btnGrille[i][j].setFont(new Font("Arial", Font.BOLD, 32));
-                btnGrille[i][j].setForeground(Color.WHITE);
-                btnGrille[i][j].setFocusPainted(false);
-                btnGrille[i][j].setBorderPainted(false);
+        this.btnGrille = new JButton[3][3];
+        for (int i = 0; i < this.btnGrille.length; i++) {
+            for (int j = 0; j < this.btnGrille[i].length; j++) {
+                this.btnGrille[i][j] = new JButton(" ");
+                this.btnGrille[i][j].setFont(new Font("Arial", Font.BOLD, 32));
+                this.btnGrille[i][j].setForeground(Color.WHITE);
+                this.btnGrille[i][j].setFocusPainted(false);
+                this.btnGrille[i][j].setBorderPainted(false);
                 grillePanel.add(btnGrille[i][j]);
-                System.out.println("Bouton [" + i + "][" + j + "] créé");
             }
         }
 
-        statusLabel = new JLabel("Joueur X commence", SwingConstants.CENTER);
+        this.statutLabel = new JLabel("Joueur X commence", SwingConstants.CENTER);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
+        buttonsPanel.add(this.btnRejouer);
+        buttonsPanel.add(this.btnRetour);
 
         // Ajout du panel à la JFrame
         jeuPanel.add(grillePanel, BorderLayout.CENTER);
-        jeuPanel.add(statusLabel, BorderLayout.NORTH);
-        jeuPanel.add(btnReset, BorderLayout.SOUTH);
+        jeuPanel.add(this.statutLabel, BorderLayout.NORTH);
+        jeuPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         // Ajout du panel à la JFrame
-        jeu.add(jeuPanel);
+        this.jeu.add(jeuPanel);
     }
 
+    // Réinitialisation de la grille
     public void resetGrille() {
+        this.statutLabel.setForeground(Color.WHITE);
+        this.setStatutLabel("Joueur X commence");
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                btnGrille[i][j].setText(" ");
+                this.btnGrille[i][j].setText(" ");
+                this.btnGrille[i][j].setBackground(UIManager.getColor("Button.background"));
             }
         }
     }
 
     // Getters
+
+    // Retourne la JFrame
     public JFrame getJeu() {
-        return jeu;
+        return this.jeu;
     }
 
+    // Retourne le bouton de la grille
     public JButton getBtnCellule(int ligne, int colonne) {
-        if (btnGrille[ligne][colonne] == null) {
-            System.out.println("ERREUR : Accès à un bouton non initialisé [" + ligne + "][" + colonne + "]");
-        }
-        return btnGrille[ligne][colonne];
+        return this.btnGrille[ligne][colonne];
     }    
 
     // Setters
-    public void setStatusLabel(String text) {
-        statusLabel.setText(text);
+
+    // Change le statut
+    public void setStatutLabel(String text) {
+        this.statutLabel.setText(text);
     }
 
+    // Change la couleur du statut
+    public void setStatutLabelColor(Color color) {
+        this.statutLabel.setForeground(color);
+    }
+
+    // Change le choix du mode de jeu
     public void setChoixModeJeu(String text) {
-        choixModeJeu.setText(text);
+        this.choixModeJeuLabel.setText("<html><div style='text-align: center; width:300px;'>" + text + "</div></html>");
     }
 
-    // Actions
+    public void setChoixModeJeuColor(Color color) {
+        this.choixModeJeuLabel.setForeground(color);
+    }
 
-    // Choix du mode de jeu
+    // Bloque ou débloque l'input
+    public void setInputBlocked(boolean blocked) {
+        this.jeu.getGlassPane().setVisible(blocked);
+    }
+    
+
+    // Listeners
+
+    // Fais apparaître le choix du mode de jeu
     public void addBtnJouerActionListener(ActionListener listener) {
-        btnJouer.addActionListener(listener);
-    }
-
-    // Jouer contre joueur
-    public void addBtnJouerVsJoueurActionListener(ActionListener listener) {
-        btnJouerVsJoueur.addActionListener(listener);
+        this.btnJouer.addActionListener(listener);
     }
 
     // Jouer contre l'ordinateur (facile)
     public void addBtnJouerVsOrdiEasyActionListener(ActionListener listener) {
-        btnJouerVsOrdiEasy.addActionListener(listener);
+        this.btnJouerVsOrdiEasy.addActionListener(listener);
     }
 
     // Jouer contre l'ordinateur (difficile)
     public void addBtnJouerVsOrdiHardActionListener(ActionListener listener) {
-        btnJouerVsOrdiHard.addActionListener(listener);
+        this.btnJouerVsOrdiHard.addActionListener(listener);
+    }
+
+    // Jouer contre joueur
+    public void addBtnJouerVsJoueurActionListener(ActionListener listener) {
+        this.btnJouerVsJoueur.addActionListener(listener);
+    }
+
+    // Retour à l'accueil
+    public void addBtnRetourAccueilActionListener(ActionListener listener) {
+        this.btnRetourAccueil.addActionListener(listener);
     }
 
     // Jouer un coup
     public void addBtnCelluleActionListener(ActionListener listener, int ligne, int colonne) {
-        if (btnGrille[ligne][colonne] == null) {
-            System.out.println("ERREUR : Le bouton [" + ligne + "][" + colonne + "] est NULL !");
-        } else {
-            System.out.println("Ajout d'un écouteur sur le bouton [" + ligne + "][" + colonne + "]");
-            btnGrille[ligne][colonne].addActionListener(listener);
-        }
+        this.btnGrille[ligne][colonne].addActionListener(listener);
     }
 
     // Rejouer
-    public void addBtnResetActionListener(ActionListener listener) {
-        btnReset.addActionListener(listener);
+    public void addBtnRejouerActionListener(ActionListener listener) {
+        this.btnRejouer.addActionListener(listener);
     }
 
-    // Animation des cellules
+    // Retour à la sélection du mode de jeu
+    public void addBtnRetourActionListener(ActionListener listener) {
+        this.btnRetour.addActionListener(listener);
+    }
+
+    // Animation des cellules lors d'un coup
     public void addBtnCelluleAnim(int ligne, int colonne, String symbole) {
-        JButton btn = btnGrille[ligne][colonne];
+        JButton btn = this.btnGrille[ligne][colonne];
         btn.setText(symbole);
         btn.setForeground(new Color(255, 255, 255, 0)); // Transparence au début
     
@@ -262,7 +320,7 @@ public class TicTacToeView extends JFrame {
 
         this.winningCells = winningCells;
 
-        effetVictoire = new Timer(300, new ActionListener() {
+        this.effetVictoire = new Timer(300, new ActionListener() {
             private boolean toggle = false;
     
             @Override
@@ -274,22 +332,22 @@ public class TicTacToeView extends JFrame {
                 toggle = !toggle;
             }
         });
-        effetVictoire.start();
+        this.effetVictoire.start();
     }
 
-    // Desactive l'animation des cellules lors de la victoire
+    // Desactive l'animation des cellules gagantes
     public void stopHighlightAnimation() {
-        if (effetVictoire != null) {
-            effetVictoire.stop();
-            effetVictoire = null;
+        if (this.effetVictoire != null) {
+            this.effetVictoire.stop();
+            this.effetVictoire = null;
         }
 
-        if (winningCells != null) {
-            for (int[] cell : winningCells) {
+        if (this.winningCells != null) {
+            for (int[] cell : this.winningCells) {
                 int i = cell[0], j = cell[1];
-                btnGrille[i][j].setBackground(new Color(70, 70, 70));
+                this.btnGrille[i][j].setBackground(new Color(70, 70, 70));
             }
         }
-        winningCells = null;
+        this.winningCells = null;
     }
 }
